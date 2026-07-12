@@ -15,7 +15,7 @@ async def main() -> None:
     dp = Dispatcher()
     dp.include_router(admin_router)
 
-    session = AiohttpSession(proxy=settings.proxy)
+    session = AiohttpSession(proxy=settings.proxy) if settings.proxy else None
 
     bot = Bot(
         token=settings.bot_token,

@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     bot_token: str = Field(..., min_length=10)
     admin_ids: Annotated[list[int], NoDecode] = Field(default_factory=list)
     rcon_password: str = Field(...)
-    proxy: str | None = Field(...)
+    proxy: str = ""
 
     @field_validator("admin_ids", mode="before")
     @classmethod

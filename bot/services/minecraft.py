@@ -12,7 +12,7 @@ from bot.config import get_settings
 settings = get_settings()
 
 
-async def start_server() -> tuple[bool, str, str]:
+async def start_server() -> tuple[bool, str]:
     process = await asyncio.create_subprocess_exec(
         "sudo",
         "systemctl",
@@ -26,19 +26,18 @@ async def start_server() -> tuple[bool, str, str]:
 
     return (
         process.returncode == 0,
-        "",
         stderr.decode().strip(),
     )
 
 
-async def stop_server() -> tuple[bool, str, str]:
+async def stop_server() -> tuple[bool, str]:
     try:
         async with aiomcrcon.Client(
             "127.0.0.1", 25575, settings.rcon_password
         ) as client:
             await client.connect()
             await client.send_cmd("say Сервер останавливается...")
-            await asyncio.sleep(1)
+            await asyncio.sleep(3)
             await client.send_cmd("save_all")
             await client.send_cmd("stop")
     except (RCONConnectionError, ClientNotConnectedError, IncorrectPasswordError):
@@ -59,14 +58,13 @@ async def stop_server() -> tuple[bool, str, str]:
 
     return (
         process.returncode == 0,
-        "",
         stderr.decode().strip(),
     )
 
 
-async def restart_server() -> tuple[bool, str, str]:
+async def restart_server() -> tuple[bool, str]:
     await stop_server()
 
-    result, stdout, stderr = await start_server()
+    result, stderr = await start_server()
 
-    return result, stdout, stderr
+    return result, stderr
