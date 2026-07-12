@@ -4,7 +4,11 @@ from aiogram.types import CallbackQuery, Message
 
 from bot.filters.admin import AdminFilter
 from bot.keyboards.admin import get_admin_main_menu
-from bot.services.minecraft import restart_server, start_server, stop_server
+from bot.services.minecraft import (
+    restart_server,
+    start_server,
+    stop_server,
+)
 from bot.services.system import is_server_running
 from bot.texts.ru import t
 
@@ -37,23 +41,29 @@ async def cmd_start_menu(message: Message):
     await message.answer(t.menu_title, reply_markup=get_admin_main_menu())
 
 
-@router.callback_query(F.data.endswith(":server"))
+@router.callback_query(F.data.in_({"start:server", "stop:server", "restart:server"}))
 async def cb_universal_server(callback: CallbackQuery):
+    if not callback.data:
+        return
+
     action = callback.data.split(":")[0]
 
     if action not in SERVER_ACTIONS:
         return
 
+    if not isinstance(callback.message, Message):
+        return
+
     action_data = SERVER_ACTIONS[action]
     func = action_data["func"]
 
-    if action in ("stop", "restart") and not is_server_running():
+    if action in ("stop", "restart") and not await is_server_running():
         await callback.message.answer("Сервер не запущен!!!")
         await callback.answer()
         return
     await callback.message.edit_text(action_data["process_text"])
 
-    result, _, error = await func()
+    result, error = await func()
 
     if result:
         await callback.message.edit_text(action_data["success_text"])
@@ -71,12 +81,12 @@ async def cmd_universal_server(message: Message, command: CommandObject):
     action_data = SERVER_ACTIONS["action"]
     func = action_data["func"]
 
-    if action in ("stop", "restart") and not is_server_running():
+    if action in ("stop", "restart") and not await is_server_running():
         await message.answer("Сервер не запущен!!!")
         return
     await message.answer(action_data["process_text"])
 
-    result, _, error = await func()
+    result, error = await func()
 
     if result:
         await message.answer(action_data["success_text"])
@@ -84,3 +94,21 @@ async def cmd_universal_server(message: Message, command: CommandObject):
         await message.answer(t.error_message.format(error=error))
 
     await message.answer(t.menu_title, reply_markup=get_admin_main_menu())
+
+
+@router.message(Command("status"))
+@router.callback_query(F.data == "status:server")
+async def handler_status_server(message: Message | CallbackQuery):
+    server_status = await is_server_running()
+
+    if isinstance(message, CallbackQuery) and message.message is not None:
+        target = message.message
+    else:
+        target = message
+
+    if server_status:
+        await target.answer(t.server_status_online)
+    else:
+        await target.answer(t.server_status_offline)
+
+    await message.answer() if isinstance(message, CallbackQuery) else None
