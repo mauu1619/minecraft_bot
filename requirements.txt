@@ -116,6 +116,10 @@ annotated-types==0.7.0 \
     --hash=sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53 \
     --hash=sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89
     # via pydantic
+asyncio-dgram==3.0.0 \
+    --hash=sha256:a4113061e6a7fbeee928d49c56cb61b68ca4a2fbee37f7e97280bbc72323ba8e \
+    --hash=sha256:bd0937807a44451d799573b32400702187fd0bba6136f7cf306e9327c0c20f3e
+    # via mcstatus
 attrs==26.1.0 \
     --hash=sha256:c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309 \
     --hash=sha256:d03ceb89cb322a8fd706d4fb91940737b6642aa36998fe130a9bc96c985eff32
@@ -124,6 +128,14 @@ certifi==2026.6.17 \
     --hash=sha256:024c88eeec92ca068db80f02b8b07c9cef7b9fe261d1d535abfd5abd6f6af432 \
     --hash=sha256:2227dcbaafe0d2f59279d1762ddddc37783ed4354594f194ffc31d20f41fc3db
     # via aiogram
+colorama==0.4.6 ; sys_platform == 'win32' \
+    --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
+    --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
+    # via loguru
+dnspython==2.8.0 \
+    --hash=sha256:01d9bbc4a2d76bf0db7c1f729812ded6d912bd318d3b1cf81d30c0f845dbf3af \
+    --hash=sha256:181d3c6996452cb1189c4046c61599b84a5a86e099562ffde77d26984ff26d0f
+    # via mcstatus
 frozenlist==1.8.0 \
     --hash=sha256:0325024fe97f94c41c08872db482cf8ac4800d80e79222c6b0b7b162d5b13686 \
     --hash=sha256:032efa2674356903cd0261c4317a561a6850f3ac864a63fc1583147fb05a79b0 \
@@ -214,10 +226,18 @@ idna==3.18 \
     --hash=sha256:7f952cbe720b688055e3f87de14f5c3e5fdaa8bc3928985c4077ca689de849a2 \
     --hash=sha256:ffb385a7e039654cef1ab9ef32c6fafe283c0c0467bba1d9029738ce4a14a848
     # via yarl
+loguru==0.7.3 \
+    --hash=sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6 \
+    --hash=sha256:31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c
+    # via minecraft-bot
 magic-filter==1.0.12 \
     --hash=sha256:4751d0b579a5045d1dc250625c4c508c18c3def5ea6afaf3957cb4530d03f7f9 \
     --hash=sha256:e5929e544f310c2b1f154318db8c5cdf544dd658efa998172acd2e4ba0f6c6a6
     # via aiogram
+mcstatus==14.0.0 \
+    --hash=sha256:8f607fe1247a5475e7602342a16f8167000cf9a95b00d3e239f706370c0fb149 \
+    --hash=sha256:92141abd6037c2e18e910061f895a23918e6e6bfd462cfba0a3b9bd0ed893942
+    # via minecraft-bot
 multidict==6.7.1 \
     --hash=sha256:03ede2a6ffbe8ef936b92cb4529f27f42be7f56afcdab5ab739cd5f27fb1cbf9 \
     --hash=sha256:0458c978acd8e6ea53c81eefaddbbee9c6c5e591f41b3f5e8e194780fe026581 \
@@ -506,6 +526,10 @@ typing-inspection==0.4.2 \
     # via
     #   pydantic
     #   pydantic-settings
+win32-setctime==1.2.0 ; sys_platform == 'win32' \
+    --hash=sha256:95d644c4e708aba81dc3704a116d8cbc974d70b3bdb8be1d150e36be6e9d1390 \
+    --hash=sha256:ae1fdf948f5640aae05c511ade119313fb6a30d7eabe25fef9764dca5873c4c0
+    # via loguru
 yarl==1.24.2 \
     --hash=sha256:0063adad533e57171b79db3943b229d40dfafeeee579767f96541f106bac5f1b \
     --hash=sha256:044a09d8401fcf8681977faef6d286b8ade1e2d2e9dceda175d1cfa5ca496f30 \
