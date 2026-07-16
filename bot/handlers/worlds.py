@@ -11,7 +11,6 @@ from bot.config import get_settings
 from bot.exceptions import MinecraftBotError, WorldAlreadyExistsError
 from bot.filters.is_admin import AdminFilter
 from bot.keyboards.inline import (
-    CB_MENU,
     CB_WORLD,
     back_to_menu,
     cancel_world_creation,
@@ -58,8 +57,8 @@ async def cb_show_worlds_list(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith(f"{CB_MENU}:del:"))
-@router.callback_query(F.data.startswith(f"{CB_MENU}:swap:"))
+@router.callback_query(F.data.startswith(f"{CB_WORLD}:del:"))
+@router.callback_query(F.data.startswith(f"{CB_WORLD}:swap:"))
 async def cb_world_action_ask(callback: CallbackQuery) -> None:
     if callback.data is None or not isinstance(callback.message, Message):
         return
