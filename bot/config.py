@@ -12,8 +12,15 @@ class Settings(BaseSettings):
 
     bot_token: str = Field(..., min_length=10)
     admin_ids: Annotated[list[int], NoDecode] = Field(default_factory=list)
+
+    server_port: int = 25565
+
+    rcon_port: int = 25575
     rcon_password: str = Field(...)
-    proxy: str = ""
+
+    minecraft_server_dir: str = "/home/minecraft/server"
+
+    http_proxy: str = ""
 
     @field_validator("admin_ids", mode="before")
     @classmethod
@@ -27,4 +34,4 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    return Settings()  # type: ignore
