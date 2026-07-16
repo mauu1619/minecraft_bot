@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     bot_token: str = Field(..., min_length=10)
     admin_ids: Annotated[list[int], NoDecode] = Field(default_factory=list)
 
+    log_level: str = "INFO"
+
     server_port: int = 25565
 
     rcon_port: int = 25575

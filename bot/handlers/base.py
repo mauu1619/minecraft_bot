@@ -37,3 +37,14 @@ async def cb_menu_open(callback: CallbackQuery, state: FSMContext) -> None:
 
     await callback.message.edit_text(t.menu_title, reply_markup=get_admin_main_menu())
     await callback.answer()
+
+
+@router.message(Command("exit", "cancel"))
+async def cmd_exit(message: Message, state: FSMContext) -> None:
+    current = await state.get_state()
+    await state.clear()
+    if current is None:
+        await message.answer(t.nothing_to_cancel)
+        return
+
+    await message.answer(t.action_canceled, reply_markup=get_admin_main_menu())
