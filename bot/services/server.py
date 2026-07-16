@@ -12,7 +12,7 @@ from aiomcrcon.errors import (
 from loguru import logger
 from mcstatus import JavaServer
 
-from bot.exceptions import MinecraftBotError, RconConnectionError, ServerError
+from bot.exceptions import RconConnectionError, ServerError
 
 
 @dataclass(slots=True, frozen=True)
@@ -95,7 +95,7 @@ class ServerService:
 
         logger.info("Служба {} запущена", self._systemd_service)
 
-    async def stop_server(self) -> None:
+    async def stop_server(self, restart: bool = False) -> None:
         try:
             logger.debug("RCON-подключение: {}", self._rcon)
 
@@ -112,7 +112,10 @@ class ServerService:
             RCONConnectionError,
             IncorrectPasswordError,
         ) as exc:
-            raise RconConnectionError(f"Ошибка подключения RCON: {exc}") from exc
+            if not restart:
+                raise RconConnectionError(f"Ошибка подключения RCON: {exc}") from exc
+            else:
+                pass
 
         await asyncio.sleep(5)
 
@@ -125,7 +128,7 @@ class ServerService:
         logger.info("Cлужба {} остановлена", self._systemd_service)
 
     async def restart_server(self) -> None:
-        await self.stop_server()
+        await self.stop_server(restart=True)
 
         logger.info("Служба {} перезапущена", self._systemd_service)
 
