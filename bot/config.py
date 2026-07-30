@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     rcon_password: str = Field(...)
 
     minecraft_server_dir: str = "/home/minecraft/server"
+    minecraft_service_name: str = "minecraft"
 
     http_proxy: str = ""
 

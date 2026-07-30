@@ -38,6 +38,8 @@ server_service = ServerService(
         password=settings.rcon_password, port=settings.rcon_port
     ),
     server_dir=Path(settings.minecraft_server_dir),
+    service_name=settings.minecraft_service_name,
+    game_port=settings.server_port,
 )
 
 
