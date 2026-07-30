@@ -24,6 +24,10 @@ class WorldNotDeletedError(WorldError):
     pass
 
 
+class InvalidArchiveError(WorldError):
+    pass
+
+
 # --- Ошибки Сервера ---
 class ServerError(MinecraftBotError):
     pass
@@ -33,5 +37,9 @@ class PropertiesNotFoundError(ServerError):
     pass
 
 
-class RconConnectionError(ServerError):
+class InvalidPropertiesError(ServerError):
+    pass
+
+
+class RCONError(ServerError):
     pass

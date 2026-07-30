@@ -1,11 +1,15 @@
+import asyncio
 import shutil
+import tempfile
 from pathlib import Path
 
 from bot.exceptions import (
     ActiveWorldError,
+    InvalidArchiveError,
     MinecraftBotError,
     PropertiesNotFoundError,
     WorldAlreadyExistsError,
+    WorldError,
     WorldNotDeletedError,
     WorldNotFoundError,
 )
@@ -82,9 +86,7 @@ class WorldsService:
     async def create_world(self, world_name: str) -> None:
         world_path = self._srv_path / world_name
         if world_path.exists():
-            raise WorldAlreadyExistsError(
-                f"✅ Мир с именем <code>{world_name}</code> уже существует!"
-            )
+            raise WorldAlreadyExistsError(f"Мир с именем {world_name} уже существует!")
 
         await self.change_world_name(world_name)
 
@@ -100,8 +102,65 @@ class WorldsService:
             )
 
         try:
-            shutil.rmtree(world_path)
+            await asyncio.to_thread(shutil.rmtree, world_path)
         except (shutil.ExecError, NotImplementedError) as exc:
             raise WorldNotDeletedError(
                 f"Системная ошибка при удалении мира: {exc}"
             ) from exc
+
+    async def export_world(self, world: str) -> Path:
+        world_path = self._srv_path / world
+        if not world_path.exists():
+            raise WorldNotFoundError(f"Мир {world} не найден на диске")
+
+        temp_path = Path(tempfile.gettempdir())
+
+        archive_path = await asyncio.to_thread(
+            shutil.make_archive,
+            format="zip",
+            base_name=str(temp_path / world),
+            root_dir=self._srv_path,
+            base_dir=world,
+        )
+
+        return Path(archive_path)
+
+    async def import_world(self, archive_path: Path, world_name: str) -> None:
+        target_path = self._srv_path / world_name
+        if target_path.exists():
+            raise WorldAlreadyExistsError(f"Мир {world_name} уже существует")
+
+        temp_dir = Path(tempfile.mkdtemp())
+
+        try:
+            await asyncio.to_thread(
+                shutil.unpack_archive,
+                filename=archive_path,
+                extract_dir=temp_dir,
+                format="zip",
+            )
+
+            world_root = None
+            for item in temp_dir.rglob("level.dat"):
+                world_root = item.parent
+                break
+
+            if not world_root:
+                raise InvalidArchiveError(
+                    "В архиве не найден файл level.dat (это не мир Minecraft)"
+                )
+
+            await asyncio.to_thread(shutil.move, world_root, target_path)
+
+        finally:
+            await asyncio.to_thread(shutil.rmtree, temp_dir, ignore_errors=True)
+
+    async def rename_world(self, world: str, new_name: str) -> None:
+        world_path = self._srv_path / world
+        if not world_path.exists():
+            raise WorldNotFoundError(f"Мир {world} не найден на диске")
+
+        try:
+            await asyncio.to_thread(shutil.move, world, new_name)
+        except OSError as exc:
+            raise WorldError(f"Ошибка при переименовании мира: {exc}") from exc

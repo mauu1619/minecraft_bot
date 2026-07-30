@@ -9,7 +9,7 @@ from aiogram.types import CallbackQuery, Message
 from loguru import logger
 
 from bot.config import get_settings
-from bot.exceptions import RconConnectionError, ServerError
+from bot.exceptions import MinecraftBotError
 from bot.filters.is_admin import AdminFilter
 from bot.keyboards.inline import CB_SERVER, back_to_menu
 from bot.services.server import RconCredentials, ServerService, ServerState
@@ -66,7 +66,7 @@ async def cb_universal_server(callback: CallbackQuery):
     action_data = SERVER_ACTIONS[action]
     func = action_data["func"]
 
-    if action in ("stop", "restart") and not await server_service._is_service_running():
+    if action in ("stop", "restart") and not await server_service.is_service_running():
         await callback.message.answer(t.status_offline)
         await callback.answer()
         return
@@ -76,7 +76,7 @@ async def cb_universal_server(callback: CallbackQuery):
 
     try:
         await func()
-    except (ServerError, RconConnectionError) as exc:
+    except MinecraftBotError as exc:
         await callback.message.edit_text(
             t.error_message.format(error=str(exc)), reply_markup=back_to_menu()
         )
@@ -95,7 +95,7 @@ async def cmd_universal_server(message: Message, command: CommandObject):
     action_data = SERVER_ACTIONS[action]
     func = action_data["func"]
 
-    if action in ("stop", "restart") and not await server_service._is_service_running():
+    if action in ("stop", "restart") and not await server_service.is_service_running():
         await message.answer(t.status_offline, reply_markup=back_to_menu())
         return
     msg = await message.answer(action_data["process_text"])
@@ -104,7 +104,7 @@ async def cmd_universal_server(message: Message, command: CommandObject):
 
     try:
         await func()
-    except (ServerError, RconConnectionError) as exc:
+    except MinecraftBotError as exc:
         await msg.edit_text(
             t.error_message.format(error=str(exc)), reply_markup=back_to_menu()
         )
@@ -135,8 +135,10 @@ async def handler_status_server(event: Message | CallbackQuery):
                 max=server_status.players_max,
                 ping=server_status.ping,
             )
+
         case ServerState.OFFLINE:
             text = t.status_offline
+
         case ServerState.STARTING:
             text = t.status_starting
 
